@@ -2,7 +2,7 @@ import binascii
 import sys
 
 def split_every(n, s):
-    return [ s[i:i+n] for i in xrange(0, len(s), n) ]
+    return [ s[i:i+n] for i in range(0, len(s), n) ]
 
 filename = sys.argv[1]
 

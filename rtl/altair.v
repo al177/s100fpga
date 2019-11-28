@@ -3,7 +3,11 @@ module altair(
 	input reset,
 	input rx,
 	output tx,
-	output sync
+	output sync,
+	output [7:0] mon_data,
+	output [15:0] mon_addr,
+	output mon_inta,
+	output mon_inte
 );
 	reg ce = 0;
 	reg intr = 0;	
@@ -15,6 +19,11 @@ module altair(
 	wire [7:0] odata;
 	wire inte_o;
 	wire sync;
+
+	assign mon_data = odata;
+	assign mon_addr = addr;
+	assign mon_inta = inta_n;
+	assign mon_inte = inte_o;
 
 	// Memory is sync so need one more clock to write/read
 	// This slows down CPU
