@@ -2,13 +2,13 @@
 set_io -nowarn rx      	  20
 set_io -nowarn tx         21
 set_io -nowarn sync       31
-set_io led_row_0  41
-set_io led_row_1  40
-set_io led_row_2  39
-set_io led_row_3  38
-set_io led_row_4  42
+set_io led_row_0  37
+set_io led_row_1  36
+set_io led_row_2  35
+set_io led_row_3  34
+set_io led_row_4  38
 set_io led_col_0  4
-set_io led_col_1  3  
+set_io led_col_1  3
 set_io led_col_2  2
 set_io led_col_3  48
 set_io led_col_4  47
