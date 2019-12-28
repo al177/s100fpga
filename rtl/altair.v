@@ -20,7 +20,7 @@ module altair(
 	wire inte_o;
 	wire sync;
 
-	assign mon_data = odata;
+	assign mon_data = idata;
 	assign mon_addr = addr;
 	assign mon_inta = inta_n;
 	assign mon_inte = inte_o;
