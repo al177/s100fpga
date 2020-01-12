@@ -3,19 +3,8 @@ module top
   input rx,
   output tx,
   output sync,
-  output reg led_row_0,
-  output reg led_row_1,
-  output reg led_row_2,
-  output reg led_row_3,
-  output reg led_row_4,
-  output led_col_0,
-  output led_col_1,
-  output led_col_2,
-  output led_col_3,
-  output led_col_4,
-  output led_col_5,
-  output led_col_6,
-  output led_col_7
+  output reg [4:0] led_row,
+  output reg [7:0] led_col,
 );
   wire clk;  
 
@@ -27,7 +16,7 @@ module top
 	always @(posedge clk) begin
 		reset_cnt <= reset_cnt + !resetn;
 	end
-  wire [7:0] led_col={led_col_7, led_col_6, led_col_5, led_col_4, led_col_3, led_col_2, led_col_1, led_col_0};
+//  wire [7:0] led_col={led_col_7, led_col_6, led_col_5, led_col_4, led_col_3, led_col_2, led_col_1, led_col_0};
 
   reg [7:0] machine_data;
   reg [15:0] machine_addr;
@@ -45,11 +34,7 @@ module top
 
   always @(posedge scaler[8]) begin
 	 row_select <= {row_select[0], row_select[4:1]};
-	 led_row_0 <= row_select[0];
-	 led_row_1 <= row_select[1];
-	 led_row_2 <= row_select[2];
-	 led_row_3 <= row_select[3];
-	 led_row_4 <= row_select[4];
+	 led_row <= row_select;
 	 machine_status[0] <= ~machine_inta;
 	 control_leds[4] <= machine_inte;
 		case(row_select)
