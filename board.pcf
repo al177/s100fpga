@@ -1,6 +1,6 @@
 # 12 MHz clock
-set_io -nowarn rx      	  20
-set_io -nowarn tx         21
+set_io rx      	  20
+set_io tx         21
 set_io -nowarn sync       31
 set_io led_row[0]  37
 set_io led_row[1]  36

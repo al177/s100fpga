@@ -30,28 +30,30 @@ roms/%.mem: roms/%
 	@python roms/rom.py $< > $@
 
 altair.bin: build top/top_altair.v $(ALTAIR_SRC) $(ALTAIR_MEM)
-	yosys -q -p "synth_ice40 -top top -blif build/altair.blif" top/top_altair.v $(ALTAIR_SRC)
-	arachne-pnr -d 5k -p board.pcf build/altair.blif -o build/altair.txt
+	yosys -q -p "synth_ice40 -top top -json build/altair.json" top/top_altair.v $(ALTAIR_SRC)
+	# TODO: i8080.v module is broken, hence --ignore-loops. Fix or replace!
+	#nextpnr-ice40 --up5k --package sg48 --pcf board.pcf --asc build/altair.txt --json build/altair.json
+	nextpnr-ice40 --up5k --package sg48 --pcf board.pcf --ignore-loops --asc build/altair.txt --json build/altair.json
 	icepack build/altair.txt altair.bin
 
 sdk80.bin: build top/top_sdk80.v $(SDK80_SRC) $(SDK80_MEM)
 	yosys -q -p "synth_ice40 -top top -blif build/sdk80.blif" top/top_sdk80.v $(SDK80_SRC)
-	arachne-pnr -d 5k -p board.pcf build/sdk80.blif -o build/sdk80.txt
+	nextpnr-ice40 -d 5k -p board.pcf build/sdk80.blif -o build/sdk80.txt
 	icepack build/sdk80.txt sdk80.bin
 
 isbc8010.bin: build top/top_isbc8010.v $(ISBC8010_SRC) $(ISBC8010_MEM)
 	yosys -q -p "synth_ice40 -top top -blif build/isbc8010.blif" top/top_isbc8010.v $(ISBC8010_SRC)
-	arachne-pnr -d 5k -p board.pcf build/isbc8010.blif -o build/isbc8010.txt
+	nextpnr-ice40 -d 5k -p board.pcf build/isbc8010.blif -o build/isbc8010.txt
 	icepack build/isbc8010.txt isbc8010.bin
 
 zexall.bin: build top/top_zexall.v $(ZEXALL_SRC) $(ZEXALL_MEM)
 	yosys -q -p "synth_ice40 -top top -blif build/zexall.blif" top/top_zexall.v $(ZEXALL_SRC)
-	arachne-pnr -d 5k -p board.pcf build/zexall.blif -o build/zexall.txt
+	nextpnr-ice40 -d 5k -p board.pcf build/zexall.blif -o build/zexall.txt
 	icepack build/zexall.txt zexall.bin
 
 z80sbc.bin: build top/top_z80sbc.v $(Z80SBC_SRC) $(Z80SBC_MEM)
 	yosys -q -p "synth_ice40 -top top -blif build/z80sbc.blif" top/top_z80sbc.v $(Z80SBC_SRC)
-	arachne-pnr -d 5k -p board.pcf build/z80sbc.blif -o build/z80sbc.txt
+	nextpnr-ice40 -d 5k -p board.pcf build/z80sbc.blif -o build/z80sbc.txt
 	icepack build/z80sbc.txt z80sbc.bin
 
 build:
