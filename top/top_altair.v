@@ -1,7 +1,7 @@
 module top
 (
   input rx,
-  output tx,
+  output reg tx,
   output sync,
   output reg [4:0] led_row,
   output reg [7:0] led_col,
@@ -10,13 +10,12 @@ module top
 
   SB_HFOSC #(.CLKHF_DIV("0b10")) u_SB_HFOSC(.CLKHFPU(1), .CLKHFEN(1), .CLKHF(clk));
 	
-  reg [5:0] reset_cnt = 0;
-	wire resetn = &reset_cnt;
+  reg [7:0] reset_cnt = 0;
+  wire resetn = &reset_cnt;
 
-	always @(posedge clk) begin
-		reset_cnt <= reset_cnt + !resetn;
-	end
-//  wire [7:0] led_col={led_col_7, led_col_6, led_col_5, led_col_4, led_col_3, led_col_2, led_col_1, led_col_0};
+  always @(posedge clk) begin
+   	reset_cnt <= reset_cnt + !resetn;
+  end
 
   reg [7:0] machine_data;
   reg [15:0] machine_addr;
@@ -27,9 +26,11 @@ module top
   wire machine_inta;
   wire machine_inte;
   
+  reg tx_async;
 
   always @(posedge clk) begin
 	  scaler <= scaler + 1;
+	  tx <= tx_async;
   end
 
   always @(posedge scaler[8]) begin
@@ -47,6 +48,6 @@ module top
 
 	end
 
-  altair machine(.clk(clk),.reset(~resetn),.rx(rx),.tx(tx),.sync(sync), .mon_data(machine_data), .mon_addr(machine_addr), .mon_inta(machine_inta), .mon_inte(machine_inte));
+  altair machine(.clk(clk),.reset(~resetn),.rx(rx),.tx(tx_async),.sync(sync), .mon_data(machine_data), .mon_addr(machine_addr), .mon_inta(machine_inta), .mon_inte(machine_inte));
 
 endmodule
