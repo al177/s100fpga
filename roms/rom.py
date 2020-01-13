@@ -11,4 +11,4 @@ with open(filename, 'rb') as f:
 
 list = split_every(2, binascii.hexlify(content))
 for i in list:
-	print(i)
+    print(i.decode("utf-8"))
