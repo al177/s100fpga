@@ -8,7 +8,8 @@ module altair(
 	output [15:0] mon_addr,
 	output mon_wait,
 	output mon_hlda,
-	output mon_inte
+	output mon_inte,
+	output [7:0] mon_sysctl
 );
 	reg ce = 0;
 	reg intr = 0;	
@@ -27,7 +28,7 @@ module altair(
 	assign mon_wait = owait;
 	assign mon_hlda = hlda;
 	assign mon_inte = inte_o;
-
+	assign mon_sysctl = sysctl;
 /*
 	frequency_divider #(.N(16),.WIDTH(20)) freq_ce
 	(

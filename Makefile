@@ -31,8 +31,6 @@ roms/%.mem: roms/%
 
 altair.bin: build top/top_altair.v $(ALTAIR_SRC) $(ALTAIR_MEM)
 	yosys -q -p "synth_ice40 -top top -json build/altair.json" top/top_altair.v $(ALTAIR_SRC)
-	# TODO: i8080.v module is broken, hence --ignore-loops. Fix or replace!
-	#nextpnr-ice40 --up5k --freq 48 --package sg48 --pcf board.pcf --asc build/altair.txt --json build/altair.json
 	nextpnr-ice40 --up5k --freq 12 --package sg48 --pcf board.pcf --ignore-loops --asc build/altair.txt --json build/altair.json
 	icepack build/altair.txt altair.bin
 

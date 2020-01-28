@@ -20,12 +20,17 @@ module top
   reg [7:0] machine_data;
   reg [15:0] machine_addr;
   reg [7:0] control_leds;
-  reg [7:0] machine_status=8'b00000000;
+  //reg [7:0] machine_status=8'b00000000;
+  wire [7:0] machine_status;
   reg [4:0] row_select=5'b00001;
   reg [15:0] scaler=16'b0;
   wire machine_wait;
   wire machine_inte;
   wire machine_hlda;
+  wire machine_rd;
+  wire machine_wr;
+  wire machine_stack;
+  wire machine_intr;
   reg tx_async;
 
   always @(posedge clk) begin
@@ -39,7 +44,7 @@ module top
 	 control_leds[0] <= 0;
 	 control_leds[1] <= 0;
 	 control_leds[2] <= machine_hlda;
-	 control_leds[3] <= ~machine_wait;
+	 control_leds[3] <= machine_wait;
 	 control_leds[4] <= machine_inte;
 	 control_leds[5] <= 0;
 	 control_leds[6] <= 0;
@@ -54,6 +59,6 @@ module top
 
 	end
 
-  altair machine(.clk(clk),.reset(~resetn),.rx(rx),.tx(tx_async),.sync(sync), .mon_data(machine_data), .mon_addr(machine_addr), .mon_wait(machine_wait), .mon_inte(machine_inte), .mon_hlda(machine_hlda));
+  altair machine(.clk(clk),.reset(~resetn),.rx(rx),.tx(tx_async),.sync(sync), .mon_data(machine_data), .mon_addr(machine_addr), .mon_wait(machine_wait), .mon_inte(machine_inte), .mon_hlda(machine_hlda), .mon_sysctl(machine_status));
 
 endmodule
