@@ -6,7 +6,7 @@ SILENT_OUT := >/dev/null
 EXE	:=
 endif
 
-ALTAIR_SRC=rtl/altair.v rtl/jmp_boot.v rtl/mc6850.v rtl/i8080.v rtl/rom_memory.v rtl/ram_memory.v rtl/simpleuart.v
+ALTAIR_SRC=rtl/altair.v rtl/jmp_boot.v rtl/mc6850.v rtl/i8080.v rtl/rom_memory.v rtl/ram_memory.v rtl/simpleuart.v rtl/vm80a.v
 ALTAIR_MEM=roms/altair/turnmon.bin.mem roms/altair/basic4k32.bin.mem roms/altair/tinybasic-1.0.bin.mem
 
 SDK80_SRC=rtl/sdk80.v rtl/i8251.v rtl/i8080.v rtl/rom_memory.v rtl/ram_memory.v rtl/simpleuart.v
@@ -32,8 +32,8 @@ roms/%.mem: roms/%
 altair.bin: build top/top_altair.v $(ALTAIR_SRC) $(ALTAIR_MEM)
 	yosys -q -p "synth_ice40 -top top -json build/altair.json" top/top_altair.v $(ALTAIR_SRC)
 	# TODO: i8080.v module is broken, hence --ignore-loops. Fix or replace!
-	#nextpnr-ice40 --up5k --package sg48 --pcf board.pcf --asc build/altair.txt --json build/altair.json
-	nextpnr-ice40 --up5k --package sg48 --pcf board.pcf --ignore-loops --asc build/altair.txt --json build/altair.json
+	#nextpnr-ice40 --up5k --freq 48 --package sg48 --pcf board.pcf --asc build/altair.txt --json build/altair.json
+	nextpnr-ice40 --up5k --freq 12 --package sg48 --pcf board.pcf --ignore-loops --asc build/altair.txt --json build/altair.json
 	icepack build/altair.txt altair.bin
 
 sdk80.bin: build top/top_sdk80.v $(SDK80_SRC) $(SDK80_MEM)

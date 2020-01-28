@@ -6,7 +6,8 @@ module altair(
 	output sync,
 	output [7:0] mon_data,
 	output [15:0] mon_addr,
-	output mon_inta,
+	output mon_wait,
+	output mon_hlda,
 	output mon_inte
 );
 	reg ce = 0;
@@ -15,23 +16,40 @@ module altair(
 	wire [15:0] addr;
 	wire rd;
 	wire wr_n;
-	wire inta_n;
+	wire owait;
+	wire hlda;
 	wire [7:0] odata;
 	wire inte_o;
 	wire sync;
 
 	assign mon_data = idata;
 	assign mon_addr = addr;
-	assign mon_inta = inta_n;
+	assign mon_wait = owait;
+	assign mon_hlda = hlda;
 	assign mon_inte = inte_o;
 
-	// Memory is sync so need one more clock to write/read
-	// This slows down CPU
-	always @(posedge clk) begin
-		ce <= !ce;
-	end
+/*
+	frequency_divider #(.N(16),.WIDTH(20)) freq_ce
+	(
+		.clk_in(clk),
+		.clk_out(ce),
+		.rst(reset)
+	);
+*/
+	
+	reg [6:0] ce_count = 6'd0;
 
-	reg[7:0] sysctl;
+	always @(posedge(clk)) begin
+		if(ce_count < 6'd2) begin
+			ce_count <= ce_count + 6'd1;
+		end else begin
+			ce_count <= 6'd0;
+			ce <= ~ce;
+		end
+	end
+//	assign ce = (ce_count < 24'd3) ? 1'b0:1'b1;
+
+	reg[7:0] sysctl = 8'b00000000;
 	
 	wire [7:0] rom_out;
 	wire [7:0] ram_out;
@@ -91,8 +109,10 @@ module altair(
 	begin
 		if (sync) sysctl <= odata;
 	end
+
+	//i8080 cpu(.clk(clk),.ce(ce),.reset(reset),.intr(intr),.idata(idata),.addr(addr),.sync(sync),.rd(rd),.wr_n(wr_n),.inta_n(inta_n),.odata(odata),.inte_o(inte_o));
 	
-	i8080 cpu(.clk(clk),.ce(ce),.reset(reset),.intr(intr),.idata(idata),.addr(addr),.sync(sync),.rd(rd),.wr_n(wr_n),.inta_n(inta_n),.odata(odata),.inte_o(inte_o));
+	vm80a_core cpu(.pin_clk(clk),.pin_f1(ce),.pin_f2(~ce), .pin_hold(0), .pin_reset(reset),.pin_int(intr),.pin_din(idata),.pin_a(addr),.pin_sync(sync),.pin_dbin(rd),.pin_wr_n(wr_n),.pin_dout(odata),.pin_inte(inte_o),.pin_wait(owait),.pin_hlda(hlda), .pin_ready(1));
 	
 	jmp_boot boot_ff(.clk(clk),.reset(reset),.rd(rd_boot),.data_out(boot_out),.valid(boot));
 	
@@ -103,6 +123,6 @@ module altair(
 	//ram_memory #(.ADDR_WIDTH(13),.FILENAME("roms/altair/tinybasic-1.0.bin.mem")) mainmem(.clk(clk),.addr(addr[12:0]),.data_in(odata),.rd(rd_rammain),.we(wr_rammain),.data_out(rammain_out));
 	ram_memory #(.ADDR_WIDTH(13),.FILENAME("roms/altair/basic4k32.bin.mem")) mainmem(.clk(clk),.addr(addr[12:0]),.data_in(odata),.rd(rd_rammain),.we(wr_rammain),.data_out(rammain_out));
 	
-	mc6850 sio(.clk(clk),.reset(reset),.addr(addr[0]),.data_in(odata),.rd(rd_sio),.we(wr_sio),.data_out(sio_out),.ce(ce),.rx(rx),.tx(tx));
+	mc6850 sio(.clk(ce),.reset(reset),.addr(addr[0]),.data_in(odata),.rd(rd_sio),.we(wr_sio),.data_out(sio_out),.ce(0),.rx(rx),.tx(tx));
 
 endmodule
