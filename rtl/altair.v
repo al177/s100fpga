@@ -29,14 +29,6 @@ module altair(
 	assign mon_hlda = hlda;
 	assign mon_inte = inte_o;
 	assign mon_sysctl = sysctl;
-/*
-	frequency_divider #(.N(16),.WIDTH(20)) freq_ce
-	(
-		.clk_in(clk),
-		.clk_out(ce),
-		.rst(reset)
-	);
-*/
 	
 	reg [6:0] ce_count = 6'd0;
 
@@ -48,7 +40,6 @@ module altair(
 			ce <= ~ce;
 		end
 	end
-//	assign ce = (ce_count < 24'd3) ? 1'b0:1'b1;
 
 	reg[7:0] sysctl = 8'b00000000;
 	
@@ -111,8 +102,6 @@ module altair(
 		if (sync) sysctl <= odata;
 	end
 
-	//i8080 cpu(.clk(clk),.ce(ce),.reset(reset),.intr(intr),.idata(idata),.addr(addr),.sync(sync),.rd(rd),.wr_n(wr_n),.inta_n(inta_n),.odata(odata),.inte_o(inte_o));
-	
 	vm80a_core cpu(.pin_clk(clk),.pin_f1(ce),.pin_f2(~ce), .pin_hold(0), .pin_reset(reset),.pin_int(intr),.pin_din(idata),.pin_a(addr),.pin_sync(sync),.pin_dbin(rd),.pin_wr_n(wr_n),.pin_dout(odata),.pin_inte(inte_o),.pin_wait(owait),.pin_hlda(hlda), .pin_ready(1));
 	
 	jmp_boot boot_ff(.clk(clk),.reset(reset),.rd(rd_boot),.data_out(boot_out),.valid(boot));
