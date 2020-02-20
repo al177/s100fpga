@@ -20,7 +20,6 @@ module top
   reg [7:0] machine_data;
   reg [15:0] machine_addr;
   reg [7:0] control_leds;
-  //reg [7:0] machine_status=8'b00000000;
   wire [7:0] machine_status;
   reg [4:0] row_select=5'b00001;
   reg [8:0] scaler=8'b0;
@@ -56,7 +55,6 @@ module top
 			5'b01000 :  led_col <= ~machine_status[7:0]; 
 			5'b10000 :  led_col <= ~control_leds[7:0]; 
 		endcase
-
 	end
 
   altair machine(.clk(clk),.reset(~resetn),.rx(rx),.tx(tx_async),.sync(sync), .mon_data(machine_data), .mon_addr(machine_addr), .mon_wait(machine_wait), .mon_inte(machine_inte), .mon_hlda(machine_hlda), .mon_sysctl(machine_status));
