@@ -23,7 +23,7 @@ module top
   //reg [7:0] machine_status=8'b00000000;
   wire [7:0] machine_status;
   reg [4:0] row_select=5'b00001;
-  reg [15:0] scaler=16'b0;
+  reg [8:0] scaler=8'b0;
   wire machine_wait;
   wire machine_inte;
   wire machine_hlda;
@@ -38,7 +38,7 @@ module top
 	  tx <= tx_async;
   end
 
-  always @(posedge scaler[8]) begin
+  always @(posedge scaler[5]) begin
 	 row_select <= {row_select[0], row_select[4:1]};
 	 led_row <= row_select;
 	 control_leds[0] <= 0;
