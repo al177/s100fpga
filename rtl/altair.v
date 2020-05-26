@@ -102,7 +102,7 @@ module altair(
 		if (sync) sysctl <= odata;
 	end
 
-	vm80a_core cpu(.pin_clk(clk),.pin_f1(ce),.pin_f2(~ce), .pin_hold(0), .pin_reset(reset),.pin_int(intr),.pin_din(idata),.pin_a(addr),.pin_sync(sync),.pin_dbin(rd),.pin_wr_n(wr_n),.pin_dout(odata),.pin_inte(inte_o),.pin_wait(owait),.pin_hlda(hlda), .pin_ready(1));
+	vm80a_core cpu(.pin_clk(clk),.pin_f1(ce),.pin_f2(~ce), .pin_hold(1'b0), .pin_reset(reset),.pin_int(intr),.pin_din(idata),.pin_a(addr),.pin_sync(sync),.pin_dbin(rd),.pin_wr_n(wr_n),.pin_dout(odata),.pin_inte(inte_o),.pin_wait(owait),.pin_hlda(hlda), .pin_ready(1'b1));
 	
 	jmp_boot boot_ff(.clk(clk),.reset(reset),.rd(rd_boot),.data_out(boot_out),.valid(boot));
 	
@@ -111,8 +111,9 @@ module altair(
 	ram_memory #(.ADDR_WIDTH(8)) stack(.clk(clk),.addr(addr[7:0]),.data_in(odata),.rd(rd_ram),.we(wr_ram),.data_out(ram_out));
 	
 	//ram_memory #(.ADDR_WIDTH(13),.FILENAME("roms/altair/tinybasic-1.0.bin.mem")) mainmem(.clk(clk),.addr(addr[12:0]),.data_in(odata),.rd(rd_rammain),.we(wr_rammain),.data_out(rammain_out));
-	ram_memory #(.ADDR_WIDTH(13),.FILENAME("roms/altair/basic4k32.bin.mem")) mainmem(.clk(clk),.addr(addr[12:0]),.data_in(odata),.rd(rd_rammain),.we(wr_rammain),.data_out(rammain_out));
+	//ram_memory #(.ADDR_WIDTH(13),.FILENAME("roms/altair/basic4k32.bin.mem")) mainmem(.clk(clk),.addr(addr[12:0]),.data_in(odata),.rd(rd_rammain),.we(wr_rammain),.data_out(rammain_out));
+	ram_memory #(.ADDR_WIDTH(13),.FILENAME("roms/altair/basic8k32.bin.mem")) mainmem(.clk(clk),.addr(addr[12:0]),.data_in(odata),.rd(rd_rammain),.we(wr_rammain),.data_out(rammain_out));
 	
-	mc6850 sio(.clk(ce),.reset(reset),.addr(addr[0]),.data_in(odata),.rd(rd_sio),.we(wr_sio),.data_out(sio_out),.ce(0),.rx(rx),.tx(tx));
+	mc6850 sio(.clk(ce),.reset(reset),.addr(addr[0]),.data_in(odata),.rd(rd_sio),.we(wr_sio),.data_out(sio_out),.ce(1'b0),.rx(rx),.tx(tx));
 
 endmodule

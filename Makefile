@@ -7,7 +7,7 @@ EXE	:=
 endif
 
 ALTAIR_SRC=rtl/altair.v rtl/jmp_boot.v rtl/mc6850.v rtl/i8080.v rtl/rom_memory.v rtl/ram_memory.v rtl/simpleuart.v rtl/vm80a.v
-ALTAIR_MEM=roms/altair/turnmon.bin.mem roms/altair/basic4k32.bin.mem roms/altair/tinybasic-1.0.bin.mem
+ALTAIR_MEM=roms/altair/turnmon.bin.mem roms/altair/basic8k32.bin.mem roms/altair/basic4k32.bin.mem roms/altair/tinybasic-1.0.bin.mem
 
 SDK80_SRC=rtl/sdk80.v rtl/i8251.v rtl/i8080.v rtl/rom_memory.v rtl/ram_memory.v rtl/simpleuart.v
 SDK80_MEM=roms/sdk80/mcs80.a14.mem
