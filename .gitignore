@@ -2,3 +2,4 @@
 /*.bin
 /*.vcd
 /a.out
+/roms/*/*.hex
