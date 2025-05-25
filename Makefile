@@ -27,11 +27,11 @@ all: altair.bin
 
 roms/%.mem: roms/%
 	@echo "Converting $@ ..."
-	@python roms/rom.py $< > $@
+	@roms/rom.py $< > $@
 
 altair.bin: build top/top_altair.v $(ALTAIR_SRC) $(ALTAIR_MEM)
 	yosys -q -p "synth_ice40 -top top -json build/altair.json" top/top_altair.v $(ALTAIR_SRC)
-	nextpnr-ice40 --up5k --freq 12 --package sg48 --pcf board.pcf --ignore-loops --asc build/altair.txt --json build/altair.json
+	nextpnr-ice40 --up5k --freq 12 --package sg48 --pcf board.pcf --ignore-loops --asc build/altair.txt --json build/altair.json --placed-svg build/altair_placed.svg --routed-svg build/altair_routed.svg
 	icepack build/altair.txt altair.bin
 
 sdk80.bin: build top/top_sdk80.v $(SDK80_SRC) $(SDK80_MEM)
