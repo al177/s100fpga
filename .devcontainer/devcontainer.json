@@ -1,5 +1,16 @@
 {
-  "name": "ICE40 Tools",
-  "dockerFile": "Dockerfile"
+	"name": "ICE40 Tools",
+	"dockerFile": "Dockerfile"
+
+	"customizations": {
+		"vscode": {
+			"settings": {
+				},
+				"extensions": [
+					"mshr-h.veriloghdl"
+				]
+			}
+		}
+	}
 }
 
