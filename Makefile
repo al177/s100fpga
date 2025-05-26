@@ -63,6 +63,14 @@ clean:
 	$(RM) -f *.vcd
 	$(RM) -f a.out
 
+flash: altair.bin
+	# exit term server
+	echo -ne "\n\001K\003" | nc -i 1 -q 1 -w 5 192.168.4.1 5000 || true
+	# send bitstream and reboot
+	upydev config -t 192.168.4.1 -p foobar
+	upydev put altair.bin
+	upydev reset
+
 test_altair: tb/altair_tb.v $(ALTAIR_SRC) $(ALTAIR_MEM)
 	iverilog -D DEBUG tb/altair_tb.v $(ALTAIR_SRC)
 	vvp a.out
