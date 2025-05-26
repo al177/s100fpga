@@ -46,6 +46,8 @@ module altair(
 	wire [7:0] rom_out;
 	wire [7:0] ram_out;
 	wire [7:0] rammain_out;
+	wire [7:0] spram_out;
+	wire [7:0] spram2_out;
 	wire [7:0] boot_out;
 	wire [7:0] sio_out;
 	
@@ -54,11 +56,15 @@ module altair(
 	
 	reg wr_ram;
 	reg wr_rammain;
+	reg wr_spram;
+	reg wr_spram2;
 	reg wr_sio;
 	
 	reg rd_boot;
 	reg rd_ram;
 	reg rd_rammain;
+	reg rd_spram;
+	reg rd_spram2;
 	reg rd_rom;
 	reg rd_sio;
 	
@@ -67,6 +73,8 @@ module altair(
 		rd_boot = 0;
 		rd_ram = 0;
 		rd_rammain = 0;
+		rd_spram = 0;
+		rd_spram2 = 0;
 		rd_rom = 0;
 		rd_sio = 0;
 		casex ({boot,sysctl[6],addr[15:8]})
@@ -74,6 +82,8 @@ module altair(
 			{2'b10,8'bxxxxxxxx}: begin idata = boot_out; rd_boot = rd; end       // any address
 			// MEM MAP
 			{2'b00,8'b000xxxxx}: begin idata = rammain_out; rd_rammain = rd; end // 0x0000-0x1fff
+			{2'b00,8'b001xxxxx}: begin idata = spram_out; rd_spram = rd; end     // 0x2000-0x3fff
+			{2'b00,8'b01xxxxxx}: begin idata = spram2_out; rd_spram2 = rd; end    // 0x4000-0x7fff
 			{2'b00,8'b11111011}: begin idata = ram_out; rd_ram = rd; end         // 0xfb00-0xfbff
 			{2'b00,8'b11111101}: begin idata = rom_out; rd_rom = rd; end         // 0xfd00-0xfdff
 			// I/O MAP - addr[15:8] == addr[7:0] for this section
@@ -86,10 +96,13 @@ module altair(
 		wr_ram = 0;
 		wr_sio = 0;
 		wr_rammain = 0;
+		wr_spram = 0;
 
 		casex ({sysctl[4],addr[15:8]})
 			// MEM MAP
 			{1'b0,8'b000xxxxx}: wr_rammain = ~wr_n; // 0x0000-0x1fff
+			{1'b0,8'b001xxxxx}: wr_spram   = ~wr_n; // 0x2000-0x3fff
+			{1'b0,8'b01xxxxxx}: wr_spram2  = ~wr_n; // 0x4000-0x7fff
 			{1'b0,8'b11111011}: wr_ram     = ~wr_n; // 0xfb00-0xfbff
 										  		    // 0xfd00-0xfdff read-only
 			// I/O MAP - addr[15:8] == addr[7:0] for this section
@@ -113,6 +126,8 @@ module altair(
 	//ram_memory #(.ADDR_WIDTH(13),.FILENAME("roms/altair/tinybasic-1.0.bin.mem")) mainmem(.clk(clk),.addr(addr[12:0]),.data_in(odata),.rd(rd_rammain),.we(wr_rammain),.data_out(rammain_out));
 	//ram_memory #(.ADDR_WIDTH(13),.FILENAME("roms/altair/basic4k32.bin.mem")) mainmem(.clk(clk),.addr(addr[12:0]),.data_in(odata),.rd(rd_rammain),.we(wr_rammain),.data_out(rammain_out));
 	ram_memory #(.ADDR_WIDTH(13),.FILENAME("roms/altair/basic8k32.bin.mem")) mainmem(.clk(clk),.addr(addr[12:0]),.data_in(odata),.rd(rd_rammain),.we(wr_rammain),.data_out(rammain_out));
+	spram_memory #(.ADDR_WIDTH(14)) extmem(.clk(clk),.addr(addr[13:0]),.data_in(odata),.rd(rd_spram),.we(wr_spram),.data_out(spram_out));
+	spram_memory #(.ADDR_WIDTH(14)) extmem2(.clk(clk),.addr(addr[13:0]),.data_in(odata),.rd(rd_spram2),.we(wr_spram2),.data_out(spram2_out));
 	
 	mc6850 sio(.clk(ce),.reset(reset),.addr(addr[0]),.data_in(odata),.rd(rd_sio),.we(wr_sio),.data_out(sio_out),.ce(1'b0),.rx(rx),.tx(tx));
 
