@@ -62,6 +62,7 @@ clean:
 	$(RM) -f *.bin
 	$(RM) -f *.vcd
 	$(RM) -f a.out
+	$(RM) $(ALTAIR_MEM) $(SDK80_MEM) $(ISBC8010_MEM) $(ZEXALL_MEM) $(Z80SBC_MEM)
 
 flash: altair.bin
 	# exit term server
