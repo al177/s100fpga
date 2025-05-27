@@ -70,7 +70,8 @@ flash: altair.bin
 	# send bitstream and reboot
 	upydev config -t 192.168.4.1 -p foobar
 	upydev put altair.bin
-	upydev reset
+	# hard reset with -hr or term_server will not start
+	upydev reset -hr
 
 test_altair: tb/altair_tb.v $(ALTAIR_SRC) $(ALTAIR_MEM)
 	iverilog -D DEBUG tb/altair_tb.v $(ALTAIR_SRC)
