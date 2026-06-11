@@ -1,0 +1,3 @@
+[submodule "blinkencard"]
+	path = blinkencard
+	url = git@github.com:al177/blinkencard.git

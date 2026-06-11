@@ -1,0 +1,68 @@
+You are a seasoned FPGA expert knowledgeable in logic design, interfacing
+various buses, Verilog, System Verilog, and writing test benches. You have
+been asked to mentor me in working on FPGAs by creating a series of
+lessons to guide me through adding a new feature.
+
+The goal I have been tasked with is to extend this design by creating a Verilog module for a SPI target interface.
+
+The interface should:
+* be driven by the attached ESP32
+* be single bit SPI at 4MHz clock max with CPOL=0, CPHA0
+* approximate the functionality of the original Altair 8800 front panel
+  * interface to the host S100 bus for system monitoring and control
+  * ability to read and write single bytes in memory space
+  * register that can be read by the host CPU when the CPU performs an IO read to 0xFF
+    * This is the SENSE register
+    * IO read cycles are mediated by STATUS[6] in the STATUS latch in altair.v
+    * need SPI command to write SENSE, no need to read back
+  * address pointer register used by the read and write byte SPI commands as the target address
+  * control register with bits controlling:
+    * CPU halt or run state
+    * CPU single step (trigger when set to 1, clear after trigger)
+    * Advance address pointer every data read or write
+    * Assert S100 reset (trigger when set to 1, clear after trigger)
+  * gather the S101 bus state normally represented by the front panel LEDs
+    * single command that latches the S100 bus address and data, STATUS latch, and standalone signals INTE, PROT, WAIT, HLDA
+    * individual commands to read back the latched values of address hi, address lo, data, status, and a byte packed with the remaining signals
+    * this allows the ESP32 to periodically sample the bus and generate a virtual front panel LED representation
+  * use a simplified SPI protocol with 16 bits per transaction:
+    * first 8 bits are a command byte selecting the operation to perform
+    * last 8 bits shift in data for a write command, shift out data from a read command
+    * 16-bit operations like address set are split into separate high and low commands
+
+The above will be written in one or more Verilog modules, with a System Verilog testbench
+run via the Makefile.
+
+Do not create the above yourself. Instead, I want to develop this myself as a learning excercise.
+
+You will write a series of lessons to guide me through implementing the above.
+The lessons will be in markdown, split into individual lessons in which I
+will:
+* Create a basic SPI interface
+  * Build the 16-bit wide SPI target as its own module
+  * This is a separate implementation from the command interpreter and bus interface
+* Learn System Verilog basics and create a test bench for the SPI interface
+  * Write a test bench to verify the SPI target created in the last lesson
+  * Show how to run the test bench first on the command line then through the Makefile
+  * Assume I know nothing about System Verilog
+* Create the command interpreter
+  * Build a module that parses commands received from the SPI block and instantiate registers used by the interpreter
+  * Write test bench for the command interpreter
+  * Since there are many commands, may break this lesson into multiple lessons iteratively adding commands and associated test benches
+* Create the bus interface
+  * Add a module that sits between the command interpreter and S100 bus to carry out the commands
+  * Write a test bench with just enough of a mocked S101 bus to test the command interpreter and bus interface together
+* Tie everything together  
+  * Instantiate the SPI target, command interpreter, and bus interface in a SPI front panel module
+  * Create a test bench for end-to-end coverage of the SPI front panel module
+  * Instantiate the front panel module in altair.v and connect to the bus
+* System test
+  * Create a test bench for the system that exercises the SPI front panel when attached to the Altair 8800 S100 bus
+
+When complete, create a SKILL.md with skills that can be used to set up context
+to ask for help with a specific lesson without having to process the whole
+lesson plan. For example, I could ask "/spi-lesson-3 Why isn't my test bench working for the single step command?"
+to signal that the question refers to lesson 3.
+
+The work here can be organized into a subdirectory including the SKILL.md
+and separate files for each lesson.
